@@ -42,30 +42,35 @@
             </mask>
 
             <filter id="eye-shader">
-                <!-- Isolate the green parts of the image -->
+                <!-- This filter is intended to make the eyes of the humanoid figure glow and pulse red. -->
+                <!-- First, we isolate the greenish colors of the eyes -->
                 <feColorMatrix type="matrix" values="
-                    -1 -1 -1 0 1
-                    -1 2 -1 0 0
-                    -1 -1 -1 0 1
-                     0  0  0 1 0" result="green-mask"/>
-                
-                <!-- Create a red color fill -->
-                <feFlood flood-color="#ff3333" flood-opacity="0.8" result="red-color"/>
+                    0 0 0 0 0
+                    -0.5 1 -0.5 0 0
+                    0 0 0 0 0
+                    0 0 0 50 -10
+                " result="green-glow-mask"/>
 
-                <!-- Combine the red color with the isolated green parts -->
-                <feComposite in="red-color" in2="green-mask" operator="in" result="red-eyes"/>
-                
-                <!-- Animate the opacity of the red overlay to make it pulse -->
-                <feComponentTransfer in="red-eyes" result="pulsing-red-eyes">
+                <!-- Create a pulsing red color -->
+                <feFlood flood-color="#ff4444" result="red-color"/>
+                <feComposite in="red-color" in2="green-glow-mask" operator="in" result="red-glow"/>
+                <feComponentTransfer in="red-glow" result="pulsing-red-glow">
                     <feFuncA type="linear" slope="1" intercept="0">
-                         <animate attributeName="slope" values="0;1;0;0;0;0;0" dur="8s" repeatCount="indefinite"/>
+                        <animate attributeName="slope" values="0;1;0.5;0;1;0" dur="7s" repeatCount="indefinite"/>
                     </feFuncA>
                 </feComponentTransfer>
 
-                <!-- Merge the pulsing red effect over the original image -->
+                <!-- We also create a bloom effect for the eyes -->
+                <feGaussianBlur in="green-glow-mask" stdDeviation="1" result="blur"/>
+                <feComponentTransfer in="blur" result="bloom">
+                    <feFuncA type="table" tableValues="0 1 1"/>
+                </feComponentTransfer>
+                
+                <!-- Merge everything together -->
                 <feMerge>
                     <feMergeNode in="SourceGraphic"/>
-                    <feMergeNode in="pulsing-red-eyes"/>
+                    <feMergeNode in="bloom"/>
+                    <feMergeNode in="pulsing-red-glow"/>
                 </feMerge>
             </filter>
         </defs>
