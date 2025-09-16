@@ -57,10 +57,13 @@
                         <animate attributeName="in" values="colored-glow-red;colored-glow-green;colored-glow-green;colored-glow-red;colored-glow-red" dur="8s" repeatCount="indefinite"/>
                     </feMergeNode>
                 </feMerge>
+
+                <!-- Clip the glow to the original image's alpha channel to prevent bleeding -->
+                <feComposite in="merged-glows" in2="SourceAlpha" operator="in" result="clipped-glow"/>
                 
                 <!-- Put the original image back on top of the glow -->
                 <feMerge>
-                    <feMergeNode in="merged-glows"/>
+                    <feMergeNode in="clipped-glow"/>
                     <feMergeNode in="SourceGraphic"/>
                 </feMerge>
             </filter>
