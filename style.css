@@ -199,7 +199,9 @@ h1 .bounce-comma { display:inline-block; animation: commaBounce 2.6s ease-in-out
 }
 
 .figure-container .figure-main {
-    filter: url(#eye-glow);
+    filter: url(#eye-shader);
+    mask-image: url(#humanoid-eye-mask);
+    -webkit-mask-image: url(#humanoid-eye-mask);
 }
 
 .figure-container img {

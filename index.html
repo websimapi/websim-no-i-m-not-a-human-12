@@ -32,36 +32,40 @@
                 </feMerge>
             </filter>
 
-            <mask id="eye-mask">
+            <mask id="humanoid-eye-mask">
+                <!-- This mask precisely isolates the glowing parts of the eyes on the humanoid figure -->
                 <rect width="100%" height="100%" fill="black" />
-                <ellipse cx="44.5%" cy="22%" rx="5.5%" ry="2.5%" fill="white" />
-                <ellipse cx="55.5%" cy="22%" rx="5.5%" ry="2.5%" fill="white" />
+                <!-- Left Eye -->
+                <path d="M 42.5,21.5 Q 44.5,20.5 46.5,21.5 L 45,23.5 Q 43.5,23.5 42.5,21.5 Z" fill="white"/>
+                <!-- Right Eye -->
+                <path d="M 53.5,21.5 Q 55.5,20.5 57.5,21.5 L 56,23.5 Q 54.5,23.5 53.5,21.5 Z" fill="white"/>
             </mask>
 
-            <filter id="eye-glow">
-                <!-- Create a blurred glow from the mask -->
-                <feImage xlink:href="#eye-mask-source" result="mask-graphic"/>
-                <feGaussianBlur in="mask-graphic" stdDeviation="4" result="blur"/>
-
-                <!-- Colorize the glow -->
-                <feFlood flood-color="#33ff33" result="glow-color-green"/>
-                <feFlood flood-color="#ff3333" result="glow-color-red"/>
+            <filter id="eye-shader">
+                <!-- Isolate the green parts of the image -->
+                <feColorMatrix type="matrix" values="
+                    -1 -1 -1 0 1
+                    -1 2 -1 0 0
+                    -1 -1 -1 0 1
+                     0  0  0 1 0" result="green-mask"/>
                 
-                <!-- Combine blurred shape with color -->
-                <feComposite in="glow-color-green" in2="blur" operator="in" result="colored-glow-green"/>
-                <feComposite in="glow-color-red" in2="blur" operator="in" result="colored-glow-red"/>
+                <!-- Create a red color fill -->
+                <feFlood flood-color="#ff3333" flood-opacity="0.8" result="red-color"/>
 
-                <!-- Animate between green and red glows -->
-                <feMerge result="merged-glows">
-                    <feMergeNode in="colored-glow-red">
-                        <animate attributeName="in" values="colored-glow-red;colored-glow-green;colored-glow-green;colored-glow-red;colored-glow-red" dur="8s" repeatCount="indefinite"/>
-                    </feMergeNode>
-                </feMerge>
+                <!-- Combine the red color with the isolated green parts -->
+                <feComposite in="red-color" in2="green-mask" operator="in" result="red-eyes"/>
                 
-                <!-- Put the original image back on top of the glow -->
+                <!-- Animate the opacity of the red overlay to make it pulse -->
+                <feComponentTransfer in="red-eyes" result="pulsing-red-eyes">
+                    <feFuncA type="linear" slope="1" intercept="0">
+                         <animate attributeName="slope" values="0;1;0;0;0;0;0" dur="8s" repeatCount="indefinite"/>
+                    </feFuncA>
+                </feComponentTransfer>
+
+                <!-- Merge the pulsing red effect over the original image -->
                 <feMerge>
-                    <feMergeNode in="merged-glows"/>
                     <feMergeNode in="SourceGraphic"/>
+                    <feMergeNode in="pulsing-red-eyes"/>
                 </feMerge>
             </filter>
         </defs>
@@ -92,7 +96,7 @@ Trioskaz' No, I'm Not A Human">!</a>
             <div class="center-panel">
                 <div class="figure-wrapper">
                     <div class="figure-container">
-                        <img src="humanoid_figure.png" alt="Distorted humanoid figure" class="figure-main" mask="url(#eye-mask)" id="eye-mask-source">
+                        <img src="humanoid_figure.png" alt="Distorted humanoid figure" class="figure-main">
                         <img src="humanoid_figure.png" alt="" aria-hidden="true" class="drip-layer">
                     </div>
                 </div>
