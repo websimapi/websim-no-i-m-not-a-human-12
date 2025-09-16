@@ -32,16 +32,16 @@
                 </feMerge>
             </filter>
 
+            <mask id="eye-mask">
+                <rect width="100%" height="100%" fill="black" />
+                <ellipse cx="44.5%" cy="38%" rx="5.5%" ry="2.5%" fill="white" />
+                <ellipse cx="55.5%" cy="38%" rx="5.5%" ry="2.5%" fill="white" />
+            </mask>
+
             <filter id="eye-glow">
-                <!-- Isolate bright areas (the eyes) -->
-                <feColorMatrix type="matrix" in="SourceGraphic"
-                    values="1 0 0 0 0
-                            0 1 0 0 0
-                            0 0 1 0 0
-                            0 0 0 50 -20" result="brights"/>
-                
-                <!-- Blur the isolated brights to create a glow halo -->
-                <feGaussianBlur in="brights" stdDeviation="4" result="blur"/>
+                <!-- Create a blurred glow from the mask -->
+                <feImage xlink:href="#eye-mask-source" result="mask-graphic"/>
+                <feGaussianBlur in="mask-graphic" stdDeviation="4" result="blur"/>
 
                 <!-- Colorize the glow -->
                 <feFlood flood-color="#33ff33" result="glow-color-green"/>
@@ -57,13 +57,10 @@
                         <animate attributeName="in" values="colored-glow-red;colored-glow-green;colored-glow-green;colored-glow-red;colored-glow-red" dur="8s" repeatCount="indefinite"/>
                     </feMergeNode>
                 </feMerge>
-
-                <!-- Clip the glow to the original image's alpha channel to prevent bleeding -->
-                <feComposite in="merged-glows" in2="SourceAlpha" operator="in" result="clipped-glow"/>
                 
                 <!-- Put the original image back on top of the glow -->
                 <feMerge>
-                    <feMergeNode in="clipped-glow"/>
+                    <feMergeNode in="merged-glows"/>
                     <feMergeNode in="SourceGraphic"/>
                 </feMerge>
             </filter>
@@ -95,7 +92,7 @@ Trioskaz' No, I'm Not A Human">!</a>
             <div class="center-panel">
                 <div class="figure-wrapper">
                     <div class="figure-container">
-                        <img src="humanoid_figure.png" alt="Distorted humanoid figure" class="figure-main">
+                        <img src="humanoid_figure.png" alt="Distorted humanoid figure" class="figure-main" mask="url(#eye-mask)" id="eye-mask-source">
                         <img src="humanoid_figure.png" alt="" aria-hidden="true" class="drip-layer">
                     </div>
                 </div>
