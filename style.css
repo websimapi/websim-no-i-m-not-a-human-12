@@ -199,7 +199,6 @@ h1 .bounce-comma { display:inline-block; animation: commaBounce 2.6s ease-in-out
 }
 
 .figure-container .figure-main {
-    filter: url(#eye-shader);
 }
 
 .figure-container img {
@@ -211,6 +210,12 @@ h1 .bounce-comma { display:inline-block; animation: commaBounce 2.6s ease-in-out
     object-fit: contain;
     mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
+
+.figure-container .figure-eyes-glow {
+    mask: url(#humanoid-eye-mask);
+    -webkit-mask: url(#humanoid-eye-mask);
+    filter: url(#eye-shader);
 }
 
 .figure-container .drip-layer {
